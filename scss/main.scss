@@ -57,10 +57,11 @@ body {
 
 .container{
   @include outer-border;
+  min-width: 234px;
   max-width: 234px;
   border-radius: 5px;
   position: absolute;
-  top: 250px;
+  top: 120px;
   left: 50%;
   margin-left: -117px;
 }
@@ -146,7 +147,6 @@ body {
   font-size: 22px;
   height: 100%;
   padding-top: 8px;
-  pointer-events: none;
 }
 .bg-gray {
   color: $button-font-black;
@@ -162,7 +162,6 @@ body {
   color: $button-font-white;
   background-color: $button-bg-orange;
   font-size: 27px;
-  padding-left: 7px;
   line-height: 24px;
 
   //hover used for testing, this is the style to apply on button click event w/ js

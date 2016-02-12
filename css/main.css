@@ -5827,10 +5827,11 @@ body {
 
 .container {
   border: 1px solid rgba(35, 35, 35, 0.5);
+  min-width: 234px;
   max-width: 234px;
   border-radius: 5px;
   position: absolute;
-  top: 250px;
+  top: 120px;
   left: 50%;
   margin-left: -117px; }
 
@@ -5914,8 +5915,7 @@ body {
 .bg-gray, .bg-orange {
   font-size: 22px;
   height: 100%;
-  padding-top: 8px;
-  pointer-events: none; }
+  padding-top: 8px; }
 
 .bg-gray {
   color: black;
@@ -5926,7 +5926,6 @@ body {
   color: white;
   background-color: #f69231;
   font-size: 27px;
-  padding-left: 7px;
   line-height: 24px; }
 
 .btn-zero {
