@@ -146,15 +146,17 @@ body {
   font-size: 22px;
   height: 100%;
   padding-top: 8px;
+  pointer-events: none;
 }
 .bg-gray {
   color: $button-font-black;
   background-color: $button-bg-grey;
   border-right: 1px solid $button-border-color;
 
-  &:hover {
-    background-color: $button-bg-grey-active;
-  }
+  //hover used for testing, this is the style to apply on button click event w/ js
+  // &:hover {
+  //   background-color: $button-bg-grey-active;
+  // }
 }
 .bg-orange {
   color: $button-font-white;
@@ -163,10 +165,11 @@ body {
   padding-left: 7px;
   line-height: 24px;
 
-  &:hover {
-    background-color: $button-bg-orange-active;
-    color: $button-font-orange-active;
-  }
+  //hover used for testing, this is the style to apply on button click event w/ js
+  // &:hover {
+  //   background-color: $button-bg-orange-active;
+  //   color: $button-font-orange-active;
+  // }
 }
 .btn-zero {
   border-radius: 0 0 0 3px;

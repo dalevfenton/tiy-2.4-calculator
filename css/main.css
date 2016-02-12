@@ -5914,14 +5914,13 @@ body {
 .bg-gray, .bg-orange {
   font-size: 22px;
   height: 100%;
-  padding-top: 8px; }
+  padding-top: 8px;
+  pointer-events: none; }
 
 .bg-gray {
   color: black;
   background-color: #e0e0e0;
   border-right: 1px solid #8e8e8e; }
-  .bg-gray:hover {
-    background-color: #b2b2b2; }
 
 .bg-orange {
   color: white;
@@ -5929,9 +5928,6 @@ body {
   font-size: 27px;
   padding-left: 7px;
   line-height: 24px; }
-  .bg-orange:hover {
-    background-color: #c47325;
-    color: #5e676a; }
 
 .btn-zero {
   border-radius: 0 0 0 3px;
