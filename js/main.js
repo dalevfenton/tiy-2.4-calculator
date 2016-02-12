@@ -2,6 +2,7 @@
 
 var inputButtons = document.body.getElementsByClassName('bg-gray');
 var operatorButtons = document.body.getElementsByClassName('bg-orange');
+var displayElement = document.querySelector('#display > span');
 var operator, swOperator, result, i, j, k, l;
 var displayVal = 0;
 var firstOperand, lastOperation;
@@ -39,7 +40,18 @@ function moveDec ( fromIndex, wholeStr ){
 }
 
 function outputToDisplay ( outputStr ) {
+  displayElement.innerHTML = outputStr;
+  if(displayElement.style.fontSize === ''){
+    displayElement.style.fontSize = window.getComputedStyle( displayElement ).fontSize;
+  }
+  var fontSize = displayElement.style.fontSize;
 
+  while (displayElement.offsetWidth > 215) {
+
+      fontSize = (Number(fontSize.slice(0, 2))- 1) + 'px';
+      console.log(Number(fontSize));
+      window.getComputedStyle( displayElement ).fontSize = fontSize;
+  }
 }
 
 function collectInput(){
@@ -96,8 +108,8 @@ function collectInput(){
       displayVal = displayVal + '.';
     }
   }
-
-  document.querySelector('#display > span').innerHTML = displayVal;
+  outputToDisplay ( displayVal );
+  // document.querySelector('#display > span').innerHTML = displayVal;
 }
 
 function collectOperator( ){
