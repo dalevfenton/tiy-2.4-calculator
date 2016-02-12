@@ -1,5 +1,23 @@
 //start sass: sass --watch scss:css
 /* Bootstrap Variables */
 $icon-font-path: "../bower_components/bootstrap-sass/assets/fonts/bootstrap/";
+// $grid-gutter-width: 0px;
+// $container-large-desktop: ( 234px + $grid-gutter-width );
+//color palette
+$close-red: rgba(254, 83, 77, 1);
+$minimize-yellow: rgba(255, 189, 46, 1);
+$maximize-green: rgba(41, 202, 65, 1);
+$button-bg-grey: rgba(224, 224, 224, 1);
+$button-bg-orange: rgba(246, 146, 49, 1);
+$button-font-black: rgba(0, 0, 0, 1);
+$button-font-white: rgba(255, 255, 255, 1);
+$button-border-color: rgba(142, 142, 142, 1);
+$container-border-color: rgba(35, 35, 35, 1);
+
+
 /* Import Bootstrap */
 @import "../bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
+
+.container{
+  max-width: 234px;
+}
