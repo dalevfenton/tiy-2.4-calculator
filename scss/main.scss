@@ -2,7 +2,7 @@
 /* Bootstrap Variables */
 $icon-font-path: "../bower_components/bootstrap-sass/assets/fonts/bootstrap/";
 $grid-gutter-width: 1px;
-$container-large-desktop: ( 234px + $grid-gutter-width );
+$container-medium-desktop: ( 576px + $grid-gutter-width );
 //color palette
 $close-red: rgba(254, 83, 77, 1);
 $minimize-yellow: rgba(255, 189, 46, 1);
@@ -64,6 +64,11 @@ body {
   top: 120px;
   left: 50%;
   margin-left: -117px;
+
+  @media (min-width: $screen-md-min) {
+    min-width: 576px;
+    max-width: 576px;
+  }
 }
 
 #control-bar {
@@ -153,7 +158,6 @@ body {
   color: $button-font-black;
   background-color: $button-bg-grey;
   border-right: 1px solid $button-border-color;
-
   //hover used for testing, this is the style to apply on button click event w/ js
   // &:hover {
   //   background-color: $button-bg-grey-active;
@@ -170,6 +174,17 @@ body {
   //   background-color: $button-bg-orange-active;
   //   color: $button-font-orange-active;
   // }
+}
+.scientific {
+  display: none;
+  font-size: 17px;
+
+  @media (min-width: $screen-md-min) {
+    display: block;
+  }
+}
+.second-function {
+  display: none;
 }
 .btn-zero {
   border-radius: 0 0 0 3px;

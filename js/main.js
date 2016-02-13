@@ -10,6 +10,7 @@ var displayVal = 0;
 var lastOperand = '';
 var test = true;
 var counter = 0;
+var secondOn = false;
 //objects used for mapping keyboard input to application logic
 var keyObj = { 13:"evaluate", 27:"calc-clear", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7", 104: "8", 105: "9", 106: "multiply", 107: "add", 109: "subtract", 110: "calc-decimal", 111: "divide", 187: "evaluate", 190: "calc-decimal", 191: "divide", 189: "subtract" };
 var shiftKeyObj = { 57: "lft-paren", 48: "rht-paren", 53: "percent", 56: "multiply", 104: "multiply", 187: "add" };
@@ -75,6 +76,27 @@ function moveDec ( fromIndex ){
   return newStr;
 }
 
+//***********************SECOND FUNCTION BUTTON IMPLEMENTATION *************************
+//function toggles several buttons to the alternate function they offer
+function secondToggle(){
+  var firsts = document.getElementsByClassName('first-function');
+  var seconds = document.getElementsByClassName('second-function');
+  console.dir( firsts );
+  console.dir( seconds );
+  if(secondOn){
+    secondOn = false;
+    for( j=0; j < firsts.length; j++ ){
+      firsts[j].style.display = 'block';
+      seconds[j].style.display = 'none';
+    }
+  }else{
+    secondOn = true;
+    for( j=0; j < firsts.length; j++ ){
+      firsts[j].style.display = 'none';
+      seconds[j].style.display = 'block';
+    }
+  }
+}
 
 //***********************INPUT BUTTON PROCESSOR*********************************
 //function takes an Object as input with attributes classList and id at a minimum
@@ -138,6 +160,12 @@ function processInput( inputObj ){
       displayVal = displayVal + '.';
     }
   }
+  //************* 2nd Function BUTTON INPUT  *****************************
+  //toggle function buttons that have the feature
+  if(inputObj.id == 'second-func'){
+    secondToggle();
+  }
+
   outputToDisplay ( displayVal );
 }
 

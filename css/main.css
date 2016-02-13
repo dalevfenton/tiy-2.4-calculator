@@ -1530,7 +1530,7 @@ pre {
       width: 941px; } }
   @media (min-width: 1200px) {
     .container {
-      width: 235px; } }
+      width: 1141px; } }
 
 .container-fluid {
   margin-right: auto;
@@ -5834,6 +5834,10 @@ body {
   top: 120px;
   left: 50%;
   margin-left: -117px; }
+  @media (min-width: 992px) {
+    .container {
+      min-width: 576px;
+      max-width: 576px; } }
 
 #control-bar {
   padding: 2px 0 0 8px; }
@@ -5929,6 +5933,16 @@ body {
   background-color: #f69231;
   font-size: 27px;
   line-height: 24px; }
+
+.scientific {
+  display: none;
+  font-size: 17px; }
+  @media (min-width: 992px) {
+    .scientific {
+      display: block; } }
+
+.second-function {
+  display: none; }
 
 .btn-zero {
   border-radius: 0 0 0 3px;
