@@ -40,78 +40,28 @@ $container-border-color: rgba(35, 35, 35, .5);
 .calc-row{
   @include make-row;
   .calc-top{
-    position: relative;
-    float: left;
-    width: percentage(( 12 / 12));
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    position: relative;
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    @media (min-width: $screen-md-min) {
-      float: left;
-      width: percentage(( 10 / 10));
-    }
+    $grid-columns: 12;
+    @include make-xs-column( 12 );
+    $grid-columns: 10;
+    @include make-md-column( 10 );
   }
   .calc-button{
-    position: relative;
-    float: left;
-    width: percentage(( 3 / 12));
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    position: relative;
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    @media (min-width: $screen-md-min) {
-      float: left;
-      width: percentage(( 1 / 10));
-    }
+    $grid-columns: 12;
+    @include make-xs-column( 3 );
+    $grid-columns: 10;
+    @include make-md-column( 1 );
   }
   .calc-button-perm{
-    position: relative;
-    float: left;
-    width: percentage(( 3 / 12));
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
+    $grid-columns: 12;
+    @include make-xs-column( 3 );
+    $grid-columns: 10;
     @include make-md-column( 1 );
-    position: relative;
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    @media (min-width: $screen-md-min) {
-      float: left;
-      width: percentage(( 1 / 10));
-    }
   }
   .calc-button-perm-wide{
-
-    position: relative;
-    float: left;
-    width: percentage(( 6 / 12));
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    position: relative;
-    min-height: 1px;
-    padding-left:  .5px;
-    padding-right: .5px;
-
-    @media (min-width: $screen-md-min) {
-      float: left;
-      width: percentage(( 2 / 10));
-    }
+    $grid-columns: 12;
+    @include make-xs-column( 6 );
+    $grid-columns: 10;
+    @include make-md-column( 2 );
   }
 }
 
