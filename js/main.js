@@ -11,10 +11,15 @@ var lastOperand = '';
 var test = true;
 var counter = 0;
 var secondOn = false;
+var butID;
 //objects used for mapping keyboard input to application logic
 var keyObj = { 13:"evaluate", 27:"calc-clear", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7", 104: "8", 105: "9", 106: "multiply", 107: "add", 109: "subtract", 110: "calc-decimal", 111: "divide", 187: "evaluate", 190: "calc-decimal", 191: "divide", 189: "subtract" };
 var shiftKeyObj = { 57: "lft-paren", 48: "rht-paren", 53: "percent", 56: "multiply", 104: "multiply", 187: "add" };
 
+//used by several log functions to set different log bases
+function getBaseLog(x, y) {
+  return Math.log(y) / Math.log(x);
+}
 
 //***************HANDLES THE UPDATING OF DISPLAY WINDOW*************************
 function outputToDisplay ( outputStr ) {
@@ -41,8 +46,43 @@ function outputToDisplay ( outputStr ) {
     }
   }
 }
-
-
+//***********************CLEAR BUTTON IMPLEMENTATION *************************
+//if we hit the clear button reset our variables and display
+function clearCalc(){
+  displayVal = '0';
+  firstOperand = '';
+  lastOperand = '';
+  lastOperation = '';
+  operator = '';
+  swOperator = '';
+  displayElement.style.fontSize = '55px';
+  document.querySelector('#calc-clear').innerHTML = 'AC';
+}
+//********************* +/- BUTTON INPUT  **********************************
+//change the value of our displayVal from pos to neg (or vice-versa)
+function plusMinus(){
+  if( displayVal != '0'){
+    if( displayVal.slice(0,1) == '-'){
+      displayVal = displayVal.slice(1, displayVal.length);
+    }else{
+      displayVal = '-' + displayVal;
+    }
+  }
+}
+//******************PERCENT BUTTON INPUT STAGING*****************************
+//logic here passes current decimal location to moveDec function
+//if no decimal is set, we put it at the far right of what we have
+function percentMoveDec(){
+  var decIndex = displayVal.indexOf('.');
+  if( decIndex > -1 ){
+    //decimal point set already move right 2 places
+    displayVal = moveDec ( decIndex );
+  }else {
+    //no decimal set, move from right side 2 places
+    displayVal += '.';
+    displayVal = moveDec( displayVal.length-1 );
+  }
+}
 //***********************PERCENT BUTTON IMPLEMENTATION *************************
 //function implements the % calculator function, gets passed the index of the
 //current decimal location
@@ -103,6 +143,9 @@ function secondToggle(){
 //Object passed in by click Event Handler is auto filled
 //Object passed by keyup Event Handler is built by sortKey and buildObj functions
 function processInput( inputObj ){
+  //set variable to check on
+  butID = inputObj.id;
+
 
   //*************NUMBER BUTTON INPUT**************************
   //check if we have hit a number key
@@ -116,54 +159,163 @@ function processInput( inputObj ){
       }
     }
   }
-  //*************CLEAR BUTTON INPUT*****************************
-  //if we hit the clear button reset our variables and display
-  if(inputObj.id == 'calc-clear'){
-    displayVal = '0';
-    firstOperand = '';
-    lastOperand = '';
-    lastOperation = '';
-    operator = '';
-    swOperator = '';
-    displayElement.style.fontSize = '55px';
-    document.querySelector('#calc-clear').innerHTML = 'AC';
-  }
-  //************* +/- BUTTON INPUT  **********************************
-  //change the value of our displayVal from pos to neg (or vice-versa)
-  if(inputObj.id == 'plus-minus'){
-    if( displayVal != '0'){
-      if( displayVal.slice(0,1) == '-'){
-        displayVal = displayVal.slice(1, displayVal.length);
-      }else{
-        displayVal = '-' + displayVal;
+
+  switch (butID) {
+    case 'calc-clear':
+      clearCalc();
+      break;
+    case 'plus-minus':
+      plusMinus();
+      break;
+    case 'percent':
+      percentMoveDec();
+      break;
+    case 'calc-decimal':
+    //************* DECIMAL BUTTON INPUT  *****************************
+    //add a decimal point or not depending on existing content
+      if( displayVal.indexOf('.') == -1 ){
+        displayVal = displayVal + '.';
       }
-    }
-  }
-  //******************PERCENT BUTTON INPUT*****************************
-  //logic here passes current decimal location to moveDec function
-  //if no decimal is set, we put it at the far right of what we have
-  if(inputObj.id == 'percent'){
-    var decIndex = displayVal.indexOf('.');
-    if( decIndex > -1 ){
-      //decimal point set already move right 2 places
-      displayVal = moveDec ( decIndex );
-    }else {
-      //no decimal set, move from right side 2 places
-      displayVal += '.';
-      displayVal = moveDec( displayVal.length-1 );
-    }
-  }
-  //************* DECIMAL BUTTON INPUT  *****************************
-  //add a decimal point or not depending on existing content
-  if(inputObj.id == 'calc-decimal'){
-    if( displayVal.indexOf('.') == -1 ){
-      displayVal = displayVal + '.';
-    }
-  }
-  //************* 2nd Function BUTTON INPUT  *****************************
-  //toggle function buttons that have the feature
-  if(inputObj.id == 'second-func'){
-    secondToggle();
+      break;
+    case 'lft-paren':
+      //handle left parenthesis
+      break;
+    case 'rht-paren':
+      //handle right parenthesis
+      break;
+    case 'mem-clear':
+      //handle memory clear
+      break;
+    case 'mem-add':
+      //add displayVal to memVal
+      break;
+    case 'mem-subtract':
+      //subtract displayVal from memVal
+      break;
+    case 'mem-recall':
+      //displayVal = memVal and update display
+      break;
+    case 'second-func':
+      //toggle function buttons that have 2nd options feature
+      secondToggle();
+      break;
+    case 'calc-squared':
+      //dispVal squared
+      displayVal = Math.pow(displayElement.innerHTML, 2);
+      break;
+    case 'calc-cubed':
+      //dispVal cubed
+      displayVal = Math.pow(displayElement.innerHTML, 3);
+      break;
+    case 'calc-xtoy':
+      //dispVal to the y power
+      processOperator(inputObj);
+      break;
+    case 'calc-etox':
+      //e to the x power
+      displayVal = Math.pow(Math.E  , displayElement.innerHTML);
+      break;
+    case 'calc-ytox':
+      //takes the second input and makes it the base, first input the exponent
+      processOperator(inputObj);
+      break;
+    case 'calc-tentox':
+      //ten to the x power
+      displayVal = Math.pow( 10  , displayElement.innerHTML);
+      break;
+    case 'calc-twotox':
+      //two to the x power
+      displayVal = Math.pow( 2  , displayElement.innerHTML);
+      break;
+    case 'calc-inverse':
+      //value of 1 divided by dispVal
+      displayVal = 1 / displayElement.innerHTML;
+      break;
+    case 'calc-sqrt':
+      //disVal square root
+      displayVal = Math.sqrt(displayElement.innerHTML);
+      break;
+    case 'calc-cube-root':
+      //dispVal cube root
+      displayVal = Math.cbrt(displayElement.innerHTML);
+      break;
+    case 'calc-xroot':
+      //dispVal x power root
+      processOperator(inputObj);
+      break;
+    case 'calc-ln':
+      //natural log
+      displayVal = Math.log(displayElement.innerHTML);
+      break;
+    case 'calc-logy':
+      //regular logarithm
+      processOperator(inputObj);
+      break;
+    case 'calc-logten':
+      //log base 10
+      displayVal = getBaseLog( 10, displayElement.innerHTML);
+      break;
+    case 'calc-logtwo':
+      //log base 2
+      displayVal = getBaseLog( 2, displayElement.innerHTML);
+      break;
+    case 'calc-factorial':
+      //value of 1 divided by dispVal
+      break;
+    case 'calc-sin':
+      //disVal square root
+      break;
+    case 'calc-arcsin':
+      //dispVal cube root
+      break;
+    case 'calc-cos':
+      //dispVal x power root
+      break;
+    case 'calc-arccos':
+      //natural log
+      break;
+    case 'calc-tan':
+      //regular logarithm
+      break;
+    case 'calc-arctan':
+      //log base 10
+      break;
+    case 'const-e':
+      //Euler's number
+      displayVal = Math.E;
+      break;
+    case 'calc-enter-exponent':
+      //log base 2
+      break;
+    case 'calc-radian':
+      //value of 1 divided by dispVal
+      break;
+    case 'calc-sinh':
+      //disVal square root
+      break;
+    case 'calc-arcsinh':
+      //dispVal cube root
+      break;
+    case 'calc-cosh':
+      //dispVal x power root
+      break;
+    case 'calc-arccosh':
+      //natural log
+      break;
+    case 'calc-tanh':
+      //regular logarithm
+      break;
+    case 'calc-arctanh':
+      //log base 10
+      break;
+    case 'const-pi':
+      //pi
+      displayVal = Math.PI;
+      break;
+    case 'calc-random':
+      //log base 2
+      break;
+    default:
   }
 
   outputToDisplay ( displayVal );
@@ -223,6 +375,22 @@ function processOperator( operatorObj ){
           break;
         case 'add':
           displayVal = Number(firstOperand) + Number(lastOperand);
+          break;
+        case 'calc-xtoy':
+          //firstOperand to the lastOperand power
+          displayVal = Math.pow(Number(firstOperand), Number(lastOperand));
+          break;
+        case 'calc-ytox':
+          //takes the second input and makes it the base, first input the exponent
+          displayVal = Math.pow(Number(lastOperand), Number(firstOperand));
+          break;
+        case 'calc-xroot':
+          //dispVal x power root
+          displayVal = Math.pow( Number(firstOperand), (1 / Number(lastOperand)) );
+          break;
+        case 'calc-logy':
+          //regular logarithm
+          displayVal = getBaseLog(lastOperand, firstOperand);
           break;
       }
       // console.log('result of the operation is: ', displayVal);
