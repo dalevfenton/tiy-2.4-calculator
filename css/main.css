@@ -3349,7 +3349,7 @@ button.close {
     @media (min-width: 992px) {
       .calc-row .calc-top {
         float: left;
-        width: 83.33333%; } }
+        width: 100%; } }
   .calc-row .calc-button {
     position: relative;
     float: left;
@@ -3364,7 +3364,7 @@ button.close {
     @media (min-width: 992px) {
       .calc-row .calc-button {
         float: left;
-        width: 8.33333%; } }
+        width: 10%; } }
   .calc-row .calc-button-perm {
     position: relative;
     float: left;
@@ -3379,7 +3379,7 @@ button.close {
     @media (min-width: 992px) {
       .calc-row .calc-button-perm {
         float: left;
-        width: 8.33333%; } }
+        width: 10%; } }
   .calc-row .calc-button-perm-wide {
     position: relative;
     float: left;
@@ -3394,7 +3394,7 @@ button.close {
     @media (min-width: 992px) {
       .calc-row .calc-button-perm-wide {
         float: left;
-        width: 16.66667%; } }
+        width: 20%; } }
 
 ul {
   list-style: none;

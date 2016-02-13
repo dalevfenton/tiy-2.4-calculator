@@ -40,27 +40,27 @@ $container-border-color: rgba(35, 35, 35, .5);
 .calc-row{
   @include make-row;
   .calc-top{
-    $grid-columns: 12;
+    $grid-columns: 12 !global;
     @include make-xs-column( 12 );
-    $grid-columns: 10;
+    $grid-columns: 10 !global;
     @include make-md-column( 10 );
   }
   .calc-button{
-    $grid-columns: 12;
+    $grid-columns: 12 !global;
     @include make-xs-column( 3 );
-    $grid-columns: 10;
+    $grid-columns: 10 !global;
     @include make-md-column( 1 );
   }
   .calc-button-perm{
-    $grid-columns: 12;
+    $grid-columns: 12 !global;
     @include make-xs-column( 3 );
-    $grid-columns: 10;
+    $grid-columns: 10 !global;
     @include make-md-column( 1 );
   }
   .calc-button-perm-wide{
-    $grid-columns: 12;
+    $grid-columns: 12 !global;
     @include make-xs-column( 6 );
-    $grid-columns: 10;
+    $grid-columns: 10 !global;
     @include make-md-column( 2 );
   }
 }
