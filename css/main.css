@@ -3390,7 +3390,9 @@ button.close {
     position: relative;
     min-height: 1px;
     padding-left: 0.5px;
-    padding-right: 0.5px; }
+    padding-right: 0.5px;
+    text-align: left;
+    padding-left: 22px; }
     @media (min-width: 992px) {
       .calc-row .calc-button-perm-wide {
         float: left;
@@ -3415,10 +3417,9 @@ body {
   min-width: 234px;
   max-width: 234px;
   border-radius: 5px;
-  position: absolute;
+  position: relative;
   top: 120px;
-  left: 50%;
-  margin-left: -117px; }
+  margin: 0 auto; }
   @media (min-width: 992px) {
     .container {
       min-width: 576px;
@@ -3528,11 +3529,6 @@ body {
 
 .second-function {
   display: none; }
-
-.btn-zero {
-  border-radius: 0 0 0 3px;
-  text-align: left;
-  padding-left: 10%; }
 
 .btn-equal {
   border-radius: 0 0 3px 0; }
