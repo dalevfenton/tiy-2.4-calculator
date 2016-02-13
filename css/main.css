@@ -5898,7 +5898,8 @@ body {
   color: white;
   font-weight: 100;
   height: 58px;
-  text-align: right; }
+  text-align: right;
+  overflow: hidden; }
 
 #display-window {
   line-height: 55px;
