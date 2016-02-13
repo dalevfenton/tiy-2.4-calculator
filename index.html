@@ -7,87 +7,87 @@
 </head>
 <body>
   <div class="container">
-    <div class="row controls display transparent-blur">
-      <div id="control-bar" class="col-xs-12">
+    <div class="calc-row controls display transparent-blur">
+      <div id="control-bar" class="calc-top">
         <ul>
           <li class="control-button calc-quit"></li>
           <li class="control-button calc-min"></li>
           <li class="control-button calc-max"></li>
         </ul>
       </div>
-      <div id="display" class="col-xs-12">
+      <div id="display" class="calc-top">
       <span id="display-window">0</span>
       </div>
     </div>
     <!-- PREPARING TO BUILD SCIENTIFIC CALC HTML-->
-    <div class="row buttons">
-      <div id="lft-paren" class="col-md-1 col-md-offset-1 scientific bg-gray">&lpar;</div> <!-- left parentheses -->
-      <div id="rht-paren" class="col-md-1 scientific bg-gray">&rpar;</div>  <!-- right parentheses -->
-      <div id="mem-clear" class="col-md-1 scientific bg-gray">mc</div>  <!-- clear memVal -->
-      <div id="mem-add" class="col-md-1 scientific bg-gray">m&plus;</div>  <!-- add dispVal to memVal -->
-      <div id="mem-subtract" class="col-md-1 scientific bg-gray">m&minus;</div> <!-- subtract dispVal to memVal -->
-      <div id="mem-recall" class="col-md-1 scientific bg-gray">mr</div>  <!-- recall memVal to display -->
-      <div id="calc-clear" class="col-xs-3 col-md-1 bg-gray">AC</div><!-- clear values -->
-      <div id="plus-minus" class="col-xs-3 col-md-1 bg-gray">&plusmn;</div><!-- +/- toggle ( dispVal * -1 ) -->
-      <div id="percent" class="col-xs-3 col-md-1 bg-gray">&percnt;</div><!-- percent (dispVal / 100 ) -->
-      <div id="divide" class="col-xs-3 col-md-1 bg-orange">&divide;</div><!-- divide -->
+    <div class="calc-row buttons">
+      <div id="lft-paren" class="calc-button scientific bg-gray">&lpar;</div> <!-- left parentheses -->
+      <div id="rht-paren" class="calc-button scientific bg-gray">&rpar;</div>  <!-- right parentheses -->
+      <div id="mem-clear" class="calc-button scientific bg-gray">mc</div>  <!-- clear memVal -->
+      <div id="mem-add" class="calc-button scientific bg-gray">m&plus;</div>  <!-- add dispVal to memVal -->
+      <div id="mem-subtract" class="calc-button scientific bg-gray">m&minus;</div> <!-- subtract dispVal to memVal -->
+      <div id="mem-recall" class="calc-button scientific bg-gray">mr</div>  <!-- recall memVal to display -->
+      <div id="calc-clear" class="calc-button-perm bg-gray">AC</div><!-- clear values -->
+      <div id="plus-minus" class="calc-button-perm bg-gray">&plusmn;</div><!-- +/- toggle ( dispVal * -1 ) -->
+      <div id="percent" class="calc-button-perm bg-gray">&percnt;</div><!-- percent (dispVal / 100 ) -->
+      <div id="divide" class="calc-button-perm bg-orange">&divide;</div><!-- divide -->
     </div>
-    <div class="row buttons">
-      <div id="second-func" class="col-md-1 col-md-offset-1 scientific bg-gray">2<sup>nd</sup></div><!-- toggle to 2nd function on some buttons -->
-      <div id="calc-squared" class="col-md-1 scientific bg-gray">x&sup2;</div><!-- squared value -->
-      <div id="calc-cubed" class="col-md-1 scientific bg-gray">x&sup3;</div><!-- cube value -->
-      <div id="calc-xtoy" class="col-md-1 scientific bg-gray">x<sup>y</sup></div><!-- x to the y power -->
-      <div id="calc-etox" class="col-md-1 scientific first-function bg-gray">e<sup>x</sup></div><!-- e to the x power -->
-      <div id="calc-ytox" class="col-md-1 scientific second-function bg-gray">y<sup>x</sup></div><!-- y to the x power -->
-      <div id="calc-tentox" class="col-md-1 scientific first-function bg-gray">10<sup>x</sup></div><!-- 10 to the x power -->
-      <div id="calc-twotox" class="col-md-1 scientific second-function bg-gray">2<sup>x</sup></div><!-- 2 to the x power -->
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">7</div>
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">8</div>
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">9</div>
-      <div id="multiply" class="col-xs-3 col-md-1 bg-orange">&times;</div><!-- multiply -->
+    <div class="calc-row buttons">
+      <div id="second-func" class="calc-button scientific bg-gray">2<sup>nd</sup></div><!-- toggle to 2nd function on some buttons -->
+      <div id="calc-squared" class="calc-button scientific bg-gray">x&sup2;</div><!-- squared value -->
+      <div id="calc-cubed" class="calc-button scientific bg-gray">x&sup3;</div><!-- cube value -->
+      <div id="calc-xtoy" class="calc-button scientific bg-gray">x<sup>y</sup></div><!-- x to the y power -->
+      <div id="calc-etox" class="calc-button scientific first-function bg-gray">e<sup>x</sup></div><!-- e to the x power -->
+      <div id="calc-ytox" class="calc-button scientific second-function bg-gray">y<sup>x</sup></div><!-- y to the x power -->
+      <div id="calc-tentox" class="calc-button scientific first-function bg-gray">10<sup>x</sup></div><!-- 10 to the x power -->
+      <div id="calc-twotox" class="calc-button scientific second-function bg-gray">2<sup>x</sup></div><!-- 2 to the x power -->
+      <div class="calc-button-perm bg-gray calc-num">7</div>
+      <div class="calc-button-perm bg-gray calc-num">8</div>
+      <div class="calc-button-perm bg-gray calc-num">9</div>
+      <div id="multiply" class="calc-button-perm bg-orange">&times;</div><!-- multiply -->
     </div>
-    <div class="row buttons">
-      <div class="col-md-1 col-md-offset-1 scientific bg-gray">1/x</div><!-- inverse -->
-      <div class="col-md-1 scientific bg-gray">&radic;</div><!-- square root-->
-      <div class="col-md-1 scientific bg-gray">&#8731;</div><!-- cube root -->
-      <div class="col-md-1 scientific bg-gray">x&radic;y</div><!-- x root -->
-      <div class="col-md-1 scientific first-function bg-gray">ln</div><!-- natural log -->
-      <div class="col-md-1 scientific second-function bg-gray">log<sub>y</sub></div><!-- log base y-->
-      <div class="col-md-1 scientific first-function bg-gray">log<sub>10</sub></div><!-- log base 10-->
-      <div class="col-md-1 scientific second-function bg-gray">log<sub>2</sub></div><!-- log base 2-->
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">4</div>
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">5</div>
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">6</div>
-      <div id="subtract" class="col-xs-3 col-md-1 bg-orange">&minus;</div><!-- subtract -->
+    <div class="calc-row buttons">
+      <div class="calc-button scientific bg-gray">1/x</div><!-- inverse -->
+      <div class="calc-button scientific bg-gray">&radic;</div><!-- square root-->
+      <div class="calc-button scientific bg-gray">&#8731;</div><!-- cube root -->
+      <div class="calc-button scientific bg-gray">x&radic;y</div><!-- x root -->
+      <div class="calc-button scientific first-function bg-gray">ln</div><!-- natural log -->
+      <div class="calc-button scientific second-function bg-gray">log<sub>y</sub></div><!-- log base y-->
+      <div class="calc-button scientific first-function bg-gray">log<sub>10</sub></div><!-- log base 10-->
+      <div class="calc-button scientific second-function bg-gray">log<sub>2</sub></div><!-- log base 2-->
+      <div class="calc-button-perm bg-gray calc-num">4</div>
+      <div class="calc-button-perm bg-gray calc-num">5</div>
+      <div class="calc-button-perm bg-gray calc-num">6</div>
+      <div id="subtract" class="calc-button-perm bg-orange">&minus;</div><!-- subtract -->
     </div>
-    <div class="row buttons">
-      <div class="col-md-1 col-md-offset-1 scientific bg-gray">x!</div><!-- x factorial -->
-      <div class="col-md-1 scientific first-function bg-gray">sin</div><!-- sine -->
-      <div class="col-md-1 scientific second-function bg-gray">sin<sup>-1</sup></div><!-- arcsine -->
-      <div class="col-md-1 scientific first-function bg-gray">cos</div><!-- cosine -->
-      <div class="col-md-1 scientific second-function bg-gray">cos<sup>-1</sup></div><!-- arc cosine -->
-      <div class="col-md-1 scientific first-function bg-gray">tan</div><!-- tangent -->
-      <div class="col-md-1 scientific second-function bg-gray">tan<sup>-1</sup></div><!-- arctan -->
-      <div class="col-md-1 scientific bg-gray">e</div> <!-- e (constant) -->
-      <div class="col-md-1 scientific bg-gray">EE</div> <!-- scientific notation -->
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">1</div>
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">2</div>
-      <div class="col-xs-3 col-md-1 bg-gray calc-num">3</div>
-      <div id="add" class="col-xs-3 col-md-1 bg-orange">&plus;</div>
+    <div class="calc-row buttons">
+      <div class="calc-button scientific bg-gray">x!</div><!-- x factorial -->
+      <div class="calc-button scientific first-function bg-gray">sin</div><!-- sine -->
+      <div class="calc-button scientific second-function bg-gray">sin<sup>-1</sup></div><!-- arcsine -->
+      <div class="calc-button scientific first-function bg-gray">cos</div><!-- cosine -->
+      <div class="calc-button scientific second-function bg-gray">cos<sup>-1</sup></div><!-- arc cosine -->
+      <div class="calc-button scientific first-function bg-gray">tan</div><!-- tangent -->
+      <div class="calc-button scientific second-function bg-gray">tan<sup>-1</sup></div><!-- arctan -->
+      <div class="calc-button scientific bg-gray">e</div> <!-- e (constant) -->
+      <div class="calc-button scientific bg-gray">EE</div> <!-- scientific notation -->
+      <div class="calc-button-perm bg-gray calc-num">1</div>
+      <div class="calc-button-perm bg-gray calc-num">2</div>
+      <div class="calc-button-perm bg-gray calc-num">3</div>
+      <div id="add" class="calc-button-perm bg-orange">&plus;</div>
     </div>
-    <div class="row buttons">
-      <div class="col-md-1 col-md-offset-1 scientific bg-gray">Rad</div> <!-- convert to radians -->
-      <div class="col-md-1 scientific first-function bg-gray">sinh</div> <!-- hyperbolic sine -->
-      <div class="col-md-1 scientific second-function bg-gray">sinh<sup>-1</sup></div> <!-- inverse hyperb. sine -->
-      <div class="col-md-1 scientific first-function bg-gray">cosh</div> <!-- hyperbolic cosine -->
-      <div class="col-md-1 scientific second-function bg-gray">cosh<sup>-1</sup></div> <!--  hyperbolic cosine -->
-      <div class="col-md-1 scientific first-function bg-gray">tanh</div> <!-- hyperbolic tangent -->
-      <div class="col-md-1 scientific second-function bg-gray">tanh<sup>-1</sup></div> <!-- hyperbolic tangent -->
-      <div class="col-md-1 scientific bg-gray">&pi;</div> <!-- pi (constant) -->
-      <div class="col-md-1 scientific bg-gray">Rand</div><!-- random number between 0 and 1 -->
-      <div class="col-xs-6 col-md-2 bg-gray btn-zero calc-num">0</div>
-      <div id="calc-decimal" class="col-xs-3 col-md-1 bg-gray">&period;</div>
-      <div id="evaluate" class="col-xs-3 col-md-1 bg-orange btn-equal">&equals;</div>
+    <div class="calc-row buttons">
+      <div class="calc-button scientific bg-gray">Rad</div> <!-- convert to radians -->
+      <div class="calc-button scientific first-function bg-gray">sinh</div> <!-- hyperbolic sine -->
+      <div class="calc-button scientific second-function bg-gray">sinh<sup>-1</sup></div> <!-- inverse hyperb. sine -->
+      <div class="calc-button scientific first-function bg-gray">cosh</div> <!-- hyperbolic cosine -->
+      <div class="calc-button scientific second-function bg-gray">cosh<sup>-1</sup></div> <!--  hyperbolic cosine -->
+      <div class="calc-button scientific first-function bg-gray">tanh</div> <!-- hyperbolic tangent -->
+      <div class="calc-button scientific second-function bg-gray">tanh<sup>-1</sup></div> <!-- hyperbolic tangent -->
+      <div class="calc-button scientific bg-gray">&pi;</div> <!-- pi (constant) -->
+      <div class="calc-button scientific bg-gray">Rand</div><!-- random number between 0 and 1 -->
+      <div class="calc-button-perm-wide bg-gray btn-zero calc-num">0</div>
+      <div id="calc-decimal" class="calc-button-perm bg-gray">&period;</div>
+      <div id="evaluate" class="calc-button-perm bg-orange btn-equal">&equals;</div>
     </div>
   </div>
 <script type="text/javascript" src="js/main.js"></script>

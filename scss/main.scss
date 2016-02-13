@@ -31,8 +31,89 @@ $container-border-color: rgba(35, 35, 35, .5);
   font-size: 10px;
   display: none;
 }
+
 /* Import Bootstrap */
 @import "../bower_components/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "../bower_components/bootstrap-sass/assets/stylesheets/bootstrap/mixins/_grid.scss";
+
+
+.calc-row{
+  @include make-row;
+  .calc-top{
+    position: relative;
+    float: left;
+    width: percentage(( 12 / 12));
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    position: relative;
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    @media (min-width: $screen-md-min) {
+      float: left;
+      width: percentage(( 10 / 10));
+    }
+  }
+  .calc-button{
+    position: relative;
+    float: left;
+    width: percentage(( 3 / 12));
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    position: relative;
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    @media (min-width: $screen-md-min) {
+      float: left;
+      width: percentage(( 1 / 10));
+    }
+  }
+  .calc-button-perm{
+    position: relative;
+    float: left;
+    width: percentage(( 3 / 12));
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    @include make-md-column( 1 );
+    position: relative;
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    @media (min-width: $screen-md-min) {
+      float: left;
+      width: percentage(( 1 / 10));
+    }
+  }
+  .calc-button-perm-wide{
+
+    position: relative;
+    float: left;
+    width: percentage(( 6 / 12));
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    position: relative;
+    min-height: 1px;
+    padding-left:  .5px;
+    padding-right: .5px;
+
+    @media (min-width: $screen-md-min) {
+      float: left;
+      width: percentage(( 2 / 10));
+    }
+  }
+}
 
 //==============================================================================
 //                 global element styles / resets
