@@ -6,21 +6,82 @@ var inputButtons = document.body.getElementsByClassName('bg-gray');
 var operatorButtons = document.body.getElementsByClassName('bg-orange');
 var displayElement = document.querySelector('#display-window');
 var operator, swOperator, result, i, j, k, l, firstOperand, lastOperation, dispFlash, passObj;
+var trigInput, trigOutput;
 var displayVal = 0;
 var lastOperand = '';
 var test = true;
 var counter = 0;
 var secondOn = false;
+var radianOn = true;
 var butID;
 //objects used for mapping keyboard input to application logic
 var keyObj = { 13:"evaluate", 27:"calc-clear", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7", 104: "8", 105: "9", 106: "multiply", 107: "add", 109: "subtract", 110: "calc-decimal", 111: "divide", 187: "evaluate", 190: "calc-decimal", 191: "divide", 189: "subtract" };
 var shiftKeyObj = { 57: "lft-paren", 48: "rht-paren", 53: "percent", 56: "multiply", 104: "multiply", 187: "add" };
 
+
+//***************MATH FUNCTIONS WRITTEN OR COPIED*************************
 //used by several log functions to set different log bases
 function getBaseLog(x, y) {
   return Math.log(y) / Math.log(x);
 }
 
+function factorial(op) {
+ // Lanczos Approximation of the Gamma Function
+ // As described in Numerical Recipes in C (2nd ed. Cambridge University Press, 1992)
+ // copied from stackoverflow ( http://stackoverflow.com/questions/3959211/fast-factorial-function-in-javascript ) - answer by Waleed Amjad
+ var z = op + 1;
+ var p = [1.000000000190015, 76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 1.208650973866179E-3, -5.395239384953E-6];
+
+ var d1 = Math.sqrt(2 * Math.PI) / z;
+ var d2 = p[0];
+
+ for (var i = 1; i <= 6; ++i)
+  d2 += p[i] / (z + i);
+
+ var d3 = Math.pow((z + 5.5), (z + 0.5));
+ var d4 = Math.exp(-(z + 5.5));
+
+ d = d1 * d2 * d3 * d4;
+
+ return d;
+}
+
+function doEE( opOne, opTwo ){
+  var output, numDigits;
+  output = '';
+  if( opOne.indexOf('.') > -1 ){
+    //if we already have a decimal in the number
+    var decIn = opOne.indexOf('.');
+    numDigits = opOne.length - decIn -1 ;
+    output = opOne.slice(0, 1) + '.' + opOne.slice(1,decIn) + opOne.slice( decIn+1, opOne.length-1) + E + (numDigits + opTwo);
+  }else{
+    //no decimal present
+    numDigits = opOne.length-1;
+    output = opOne.slice(0,1) + '.' + opOne.slice(1, numDigits ) + 'E' + (numDigits + opTwo);
+  }
+}
+
+function inputTrig(){
+  if(radianOn){
+    //if radianOn is true, we are actually in degree mode
+    //and need to convert values from degrees to radians
+    return displayElement.innerHTML * Math.PI / 180;
+  }else{
+    //if radianOn is false we are getting our input in radians
+    return displayElement.innerHTML;
+  }
+}
+
+function outputTrig( trigVal ){
+  if(radianOn){
+    //if radianOn is true, we are actually in degree mode
+    //and need to convert value back to radian for output
+    return trigVal / Math.PI / 180;
+  }else{
+    //if radianOn is false we are getting our input in radians
+    return trigVal;
+  }
+}
 //***************HANDLES THE UPDATING OF DISPLAY WINDOW*************************
 function outputToDisplay ( outputStr ) {
   //if we are getting an input that is too long, just reset
@@ -48,8 +109,8 @@ function outputToDisplay ( outputStr ) {
 }
 //***********************CLEAR BUTTON IMPLEMENTATION *************************
 //if we hit the clear button reset our variables and display
-function clearCalc(){
-  displayVal = '0';
+function clearCalc( setDisplay ){
+  displayVal = setDisplay;
   firstOperand = '';
   lastOperand = '';
   lastOperation = '';
@@ -121,8 +182,8 @@ function moveDec ( fromIndex ){
 function secondToggle(){
   var firsts = document.getElementsByClassName('first-function');
   var seconds = document.getElementsByClassName('second-function');
-  console.dir( firsts );
-  console.dir( seconds );
+  // console.dir( firsts );
+  // console.dir( seconds );
   if(secondOn){
     secondOn = false;
     for( j=0; j < firsts.length; j++ ){
@@ -137,6 +198,23 @@ function secondToggle(){
     }
   }
 }
+
+//***********************RADIAN / DEGREE BUTTON IMPLEMENTATION *************************
+//toggles the setting of trig functions from doing calculation based on degrees or radian
+function radianDegreeToggle(){
+  var radianBtn = document.querySelector('#calc-radian');
+  var degreeBtn = document.querySelector('#calc-degrees');
+  if(radianOn){
+    radianOn = false;
+    radianBtn.style.display = 'none';
+    degreeBtn.style.display = 'block';
+  }else{
+    radianOn = true;
+    radianBtn.style.display = 'block';
+    degreeBtn.style.display = 'none';
+  }
+}
+
 
 //***********************INPUT BUTTON PROCESSOR*********************************
 //function takes an Object as input with attributes classList and id at a minimum
@@ -162,7 +240,7 @@ function processInput( inputObj ){
 
   switch (butID) {
     case 'calc-clear':
-      clearCalc();
+      clearCalc('0');
       break;
     case 'plus-minus':
       plusMinus();
@@ -260,35 +338,62 @@ function processInput( inputObj ){
       displayVal = getBaseLog( 2, displayElement.innerHTML);
       break;
     case 'calc-factorial':
-      //value of 1 divided by dispVal
+      //factorial of input value
+      if( (Number(displayElement.innerHTML) <= 75) ){
+        displayVal = factorial( displayElement.innerHTML );
+      }else{
+        clearCalc('Overflow');
+      }
       break;
     case 'calc-sin':
-      //disVal square root
+      //sin function
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      trig = Math.sin(degToRad);
+      displayVal = trig / Math.PI /180;
+      displayVal = doTrig(displayElement.innerHTML, 'sin');
       break;
     case 'calc-arcsin':
-      //dispVal cube root
+      //arcsin in degrees
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      trig = Math.asin(degToRad);
+      displayVal = trig / Math.PI /180;
       break;
     case 'calc-cos':
-      //dispVal x power root
+      //cos in degrees
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      trig = Math.cos(degToRad);
+      displayVal = trig / Math.PI /180;
       break;
     case 'calc-arccos':
-      //natural log
+      //arccos in degrees
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      trig = Math.acos(degToRad);
+      displayVal = trig / Math.PI /180;
       break;
     case 'calc-tan':
-      //regular logarithm
+      //tan in degrees
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      trig = Math.tan(degToRad);
+      displayVal = trig / Math.PI /180;
       break;
     case 'calc-arctan':
-      //log base 10
+      //arctan in degrees
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      trig = Math.atan(degToRad);
+      displayVal = trig / Math.PI /180;
       break;
     case 'const-e':
       //Euler's number
       displayVal = Math.E;
       break;
     case 'calc-enter-exponent':
-      //log base 2
+      //do EE operation
+      processOperator(inputObj);
       break;
     case 'calc-radian':
       //value of 1 divided by dispVal
+      degToRad = displayElement.innerHTML * Math.PI / 180;
+      displayVal = degToRad;
       break;
     case 'calc-sinh':
       //disVal square root
@@ -391,6 +496,10 @@ function processOperator( operatorObj ){
         case 'calc-logy':
           //regular logarithm
           displayVal = getBaseLog(lastOperand, firstOperand);
+          break;
+        case 'calc-enter-exponent':
+          //do EE operation
+          displayVal = doEE(firstOperand, lastOperand);
           break;
       }
       // console.log('result of the operation is: ', displayVal);
