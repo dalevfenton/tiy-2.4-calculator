@@ -41,6 +41,8 @@ function doDebug(){
     debugOutput += '<li>swOperator: '+ swOperator + '</li>';
     debugOutput += '<li>inputComplete: '+ inputComplete + '</li>';
     debugOutput += '<li>radianOn: '+ radianOn + '</li>';
+    debugOutput += '<li>dispFlash: '+ dispFlash + '</li>';
+    console.dir( parenArray );
     debugOutput += '</ul>';
     debugElement.innerHTML = debugOutput;
   }
@@ -84,7 +86,7 @@ function inputTrig(){
   if(radianOn){
     //if radianOn is true, we are actually in degree mode
     //and need to convert values from degrees to radians
-    console.log('converting '+ displayElement.innerHTML + ' degrees into ' + displayElement.innerHTML * Math.PI / 180 + ' radians for computation');
+    // console.log('converting '+ displayElement.innerHTML + ' degrees into ' + displayElement.innerHTML * Math.PI / 180 + ' radians for computation');
     return displayElement.innerHTML * Math.PI / 180;
   }else{
     //if radianOn is false we are getting our input in radians
@@ -96,7 +98,7 @@ function outputTrig( trigVal ){
   if(radianOn){
     //if radianOn is true, we are actually in degree mode
     //and need to convert value back to radian for output
-    console.log('converting '+ trigVal + ' radians into ' + trigVal / ( Math.PI / 180 ) + ' degrees for output');
+    // console.log('converting '+ trigVal + ' radians into ' + trigVal / ( Math.PI / 180 ) + ' degrees for output');
     return trigVal * ( 180 / Math.PI );
   }else{
     //if radianOn is false we are getting our input in radians
@@ -202,12 +204,12 @@ function moveDec ( fromIndex ){
 //and the current firstOperand and operation setting
 function closeParen(){
   if(parenArray.length > 0){
-    console.log('inside parenArray check');
     //we have items on the stack so
     //check status of firstOperand and operation variables
+    lastOperand = displayVal;
+    swOperator = operator;
     switchOperator(operator);
     savedOp = parenArray.pop();
-    console.dir(savedOp);
     firstOperand = savedOp.firstOperand;
     operator = savedOp.operator;
     lastOperand = '';
@@ -310,10 +312,11 @@ function processInput( inputObj ){
     case 'lft-paren':
       //handle left parenthesis
       parenArray.push({'firstOperand':firstOperand, 'operator':operator});
-      console.dir( parenArray );
       firstOperand = 0;
       operator = '';
       inputComplete = true;
+      dispFlash = true;
+      displayVal = displayElement.innerHTML;
       break;
     case 'rht-paren':
       //handle right parenthesis
@@ -553,7 +556,7 @@ function processOperator( operatorObj ){
     setTimeout(flashDisp, 10);
   } else if( operatorObj.id !== 'evaluate'){
     //evaluating on second operator input
-    console.log('inside eval on operator input');
+    // console.log('inside eval on operator input');
     lastOperand = displayVal;
     swOperator = operator;
     switchOperator();
