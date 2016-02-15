@@ -205,7 +205,6 @@ function closeParen(){
     console.log('inside parenArray check');
     //we have items on the stack so
     //check status of firstOperand and operation variables
-    operator = lastOperation;
     switchOperator(operator);
     savedOp = parenArray.pop();
     console.dir(savedOp);
@@ -318,9 +317,7 @@ function processInput( inputObj ){
       break;
     case 'rht-paren':
       //handle right parenthesis
-      lastOperation = operator;
-      operator = 'rht-paren';
-      processOperator(inputObj);
+      closeParen();
       break;
     case 'mem-clear':
       //handle memory clear
@@ -556,7 +553,7 @@ function processOperator( operatorObj ){
     setTimeout(flashDisp, 10);
   } else if( operatorObj.id !== 'evaluate'){
     //evaluating on second operator input
-    // console.log('inside eval on operator input');
+    console.log('inside eval on operator input');
     lastOperand = displayVal;
     swOperator = operator;
     switchOperator();
