@@ -27,7 +27,7 @@ var shiftKeyObj = { 57: "lft-paren", 48: "rht-paren", 53: "percent", 56: "multip
 
 //***************DEBUG OUTPUT*************************
 //log app state to screen for debugging
-var debugOn = true;
+var debugOn = false;
 function doDebug(){
   if(debugOn){
     var debugElement = document.querySelector('#debug-window');
