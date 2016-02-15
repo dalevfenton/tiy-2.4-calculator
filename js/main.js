@@ -5,9 +5,12 @@
 var inputButtons = document.body.getElementsByClassName('bg-gray');
 var operatorButtons = document.body.getElementsByClassName('bg-orange');
 var displayElement = document.querySelector('#display-window');
-var operator, swOperator, result, i, j, k, l, firstOperand, lastOperation, dispFlash, passObj;
+var memRecall = document.querySelector('#mem-recall');
+var degRadDisp = document.querySelector('#deg-rad-indicator');
+var swOperator, result, i, j, k, l, firstOperand, lastOperation, dispFlash, passObj;
 var trigInput, trigOutput;
 var displayVal = 0;
+var operator = '';
 var lastOperand = '';
 var test = true;
 var counter = 0;
@@ -16,6 +19,7 @@ var radianOn = true;
 var inputComplete = false;
 var memVal = 0;
 var parenArray = [];
+var savedOp;
 var butID, flashTemp;
 //objects used for mapping keyboard input to application logic
 var keyObj = { 13:"evaluate", 27:"calc-clear", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7", 104: "8", 105: "9", 106: "multiply", 107: "add", 109: "subtract", 110: "calc-decimal", 111: "divide", 187: "evaluate", 190: "calc-decimal", 191: "divide", 189: "subtract" };
@@ -67,11 +71,11 @@ function doEE( opOne, opTwo ){
     //if we already have a decimal in the number
     var decIn = opOne.indexOf('.');
     numDigits = opOne.length - decIn;
-    output = opOne.slice(0, 1) + '.' + opOne.slice(1,decIn) + opOne.slice( decIn+1, opOne.length-1) + E + (numDigits + opTwo);
+    output = opOne.slice(0, 1) + '.' + opOne.slice(1,decIn) + opOne.slice( decIn+1, opOne.length) + 'E' + ( Number(numDigits) + Number(opTwo));
   }else{
     //no decimal present
     numDigits = opOne.length;
-    output = opOne.slice(0,1) + '.' + opOne.slice(1, numDigits ) + ' E ' + (numDigits + opTwo);
+    output = opOne.slice(0,1) + '.' + opOne.slice(1, numDigits ) + ' E ' + (Number(numDigits) + Number(opTwo));
   }
   return output;
 }
@@ -80,6 +84,7 @@ function inputTrig(){
   if(radianOn){
     //if radianOn is true, we are actually in degree mode
     //and need to convert values from degrees to radians
+    console.log('converting '+ displayElement.innerHTML + ' degrees into ' + displayElement.innerHTML * Math.PI / 180 + ' radians for computation');
     return displayElement.innerHTML * Math.PI / 180;
   }else{
     //if radianOn is false we are getting our input in radians
@@ -91,7 +96,8 @@ function outputTrig( trigVal ){
   if(radianOn){
     //if radianOn is true, we are actually in degree mode
     //and need to convert value back to radian for output
-    return trigVal / Math.PI / 180;
+    console.log('converting '+ trigVal + ' radians into ' + trigVal / ( Math.PI / 180 ) + ' degrees for output');
+    return trigVal * ( 180 / Math.PI );
   }else{
     //if radianOn is false we are getting our input in radians
     return trigVal;
@@ -101,10 +107,9 @@ function outputTrig( trigVal ){
 function outputToDisplay ( outputStr ) {
   //if we are getting an input that is too long, just reset
   if( outputStr.length > 15 ){
-    displayVal = 0;
+    displayVal = outputStr.slice(0, 15);
     displayElement.style.fontSize = '55px';
-    displayElement.innerHTML = "Overflow";
-    alert('Number Inputted Is Too Large, Resetting Calculator');
+    displayElement.innerHTML = displayVal;
   } else {
     //set display with new value
     displayElement.innerHTML = outputStr;
@@ -197,11 +202,20 @@ function moveDec ( fromIndex ){
 //and the current firstOperand and operation setting
 function closeParen(){
   if(parenArray.length > 0){
+    console.log('inside parenArray check');
     //we have items on the stack so
     //check status of firstOperand and operation variables
-    if( (typeof firstOperand == 'number' || typeof firstOperand == 'string') && operator !== '' ) {
-
-    }
+    operator = lastOperation;
+    switchOperator(operator);
+    savedOp = parenArray.pop();
+    console.dir(savedOp);
+    firstOperand = savedOp.firstOperand;
+    operator = savedOp.operator;
+    lastOperand = '';
+    lastOperation = '';
+    dispFlash = true;
+    doDebug();
+    setTimeout(flashDisp, 10);
   }else{
     //stack is not currently set just flash current screen display
     flashTemp = displayElement.innerHTML;
@@ -242,10 +256,12 @@ function radianDegreeToggle(){
     radianOn = false;
     radianBtn.style.display = 'none';
     degreeBtn.style.display = 'block';
+    degRadDisp.innerHTML = 'Radian';
   }else{
     radianOn = true;
     radianBtn.style.display = 'block';
     degreeBtn.style.display = 'none';
+    degRadDisp.innerHTML = 'Degree';
   }
 }
 
@@ -262,7 +278,7 @@ function processInput( inputObj ){
   for( j=0; j < inputObj.classList.length; j++ ){
     if( inputObj.classList[j] == 'calc-num'){
       if (inputComplete){
-        lastOperand = displayElement.innerHTML;
+        // lastOperand = displayElement.innerHTML;
         displayVal = '';
         inputComplete = false;
       }
@@ -294,28 +310,34 @@ function processInput( inputObj ){
       break;
     case 'lft-paren':
       //handle left parenthesis
-      parenArray.push([firstOperand, operator]);
+      parenArray.push({'firstOperand':firstOperand, 'operator':operator});
+      console.dir( parenArray );
       firstOperand = 0;
       operator = '';
       inputComplete = true;
       break;
     case 'rht-paren':
       //handle right parenthesis
-      closeParen();
+      lastOperation = operator;
+      operator = 'rht-paren';
+      processOperator(inputObj);
       break;
     case 'mem-clear':
       //handle memory clear
       memVal = 0;
+      clearMRBorder();
       break;
     case 'mem-add':
       //add displayVal to memVal
       memVal += Number(displayVal);
       inputComplete = true;
+      addMRBorder();
       break;
     case 'mem-subtract':
       //subtract displayVal from memVal
       memVal -= Number(displayVal);
       inputComplete = true;
+      addMRBorder();
       break;
     case 'mem-recall':
       //displayVal = memVal and update
@@ -409,43 +431,37 @@ function processInput( inputObj ){
     case 'calc-sin':
       //sine function
       trig = inputTrig();
-      trig = Math.sin(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.sin(trig);
       inputComplete = true;
       break;
     case 'calc-arcsin':
       //arcsin
       trig = inputTrig();
-      trig = Math.asin(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.asin(trig);
       inputComplete = true;
       break;
     case 'calc-cos':
       //cosine
       trig = inputTrig();
-      trig = Math.cos(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.cos(trig);
       inputComplete = true;
       break;
     case 'calc-arccos':
       //arccos
       trig = inputTrig();
-      trig = Math.acos(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.acos(trig);
       inputComplete = true;
       break;
     case 'calc-tan':
       //tangent
       trig = inputTrig();
-      trig = Math.tan(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.tan(trig);
       inputComplete = true;
       break;
     case 'calc-arctan':
       //arctan
       trig = inputTrig();
-      trig = Math.atan(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.atan(trig);
       inputComplete = true;
       break;
     case 'const-e':
@@ -468,43 +484,37 @@ function processInput( inputObj ){
     case 'calc-sinh':
       //hyperbolic sine
       trig = inputTrig();
-      trig = Math.sinh(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.sinh(trig);
       inputComplete = true;
       break;
     case 'calc-arcsinh':
       //hyperbolic arcsin
       trig = inputTrig();
-      trig = Math.asinh(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.asinh(trig);
       inputComplete = true;
       break;
     case 'calc-cosh':
       //hyperbolic cosine
       trig = inputTrig();
-      trig = Math.cosh(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.cosh(trig);
       inputComplete = true;
       break;
     case 'calc-arccosh':
       //hyperbolic arccos
       trig = inputTrig();
-      trig = Math.acosh(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.acosh(trig);
       inputComplete = true;
       break;
     case 'calc-tanh':
       //hyperbolic tan
       trig = inputTrig();
-      trig = Math.tanh(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.tanh(trig);
       inputComplete = true;
       break;
     case 'calc-arctanh':
       //hyperbolic arctan
       trig = inputTrig();
-      trig = Math.atanh(trig);
-      displayVal = outputTrig( trig );
+      displayVal = Math.atanh(trig);
       inputComplete = true;
       break;
     case 'const-pi':
@@ -535,17 +545,31 @@ function processOperator( operatorObj ){
   inputComplete = true;
   outputToDisplay( '' );
   //check if we need to evaluate the current expression or set operation
-  if( operatorObj.id != 'evaluate' && firstOperand === '' ){
+  if( operatorObj.id != 'evaluate' && operator === '' ){
     //save the operation to do and save the first operand value
+    // console.log('inside set operator');
     operator = operatorObj.id;
     firstOperand = displayVal;
     dispFlash = false;
     lastOperand = '';
     doDebug();
     setTimeout(flashDisp, 10);
+  } else if( operatorObj.id !== 'evaluate'){
+    //evaluating on second operator input
+    // console.log('inside eval on operator input');
+    lastOperand = displayVal;
+    swOperator = operator;
+    switchOperator();
+    operator = operator;
+    firstOperand = displayVal;
+    lastOperand = '';
+    lastOperation = operator;
+    dispFlash = true;
+    doDebug();
+    setTimeout(flashDisp, 10);
   } else {
     //execute the operation
-
+    // console.log('inside eval on equals input');
     //set lastOperand to use if we get evaluated again after this, but only if
     // it is currently not set (otherwise we might be on the 2nd run already!)
     if(firstOperand === ''){
@@ -568,40 +592,7 @@ function processOperator( operatorObj ){
     // console.log('displayVal is: ', displayVal);
     // console.log('swOperator is: ', swOperator);
     // console.log('lastOperand is: ', lastOperand);
-    switch(swOperator) {
-      case 'divide':
-        displayVal = Number(firstOperand) / Number(lastOperand);
-        break;
-      case 'multiply':
-        displayVal = Number(firstOperand) * Number(lastOperand);
-        break;
-      case 'subtract':
-        displayVal = Number(firstOperand) - Number(lastOperand);
-        break;
-      case 'add':
-        displayVal = Number(firstOperand) + Number(lastOperand);
-        break;
-      case 'calc-xtoy':
-        //firstOperand to the lastOperand power
-        displayVal = Math.pow(Number(firstOperand), Number(lastOperand));
-        break;
-      case 'calc-ytox':
-        //takes the second input and makes it the base, first input the exponent
-        displayVal = Math.pow(Number(lastOperand), Number(firstOperand));
-        break;
-      case 'calc-xroot':
-        //dispVal x power root
-        displayVal = Math.pow( Number(firstOperand), (1 / Number(lastOperand)) );
-        break;
-      case 'calc-logy':
-        //regular logarithm
-        displayVal = getBaseLog(lastOperand, firstOperand);
-        break;
-      case 'calc-enter-exponent':
-        //do EE operation
-        displayVal = doEE(firstOperand, lastOperand);
-        break;
-    }
+    switchOperator();
     // console.log('result of the operation is: ', displayVal);
     // reset variables for use in next operation(s)
     //new operand is result of this operation
@@ -609,18 +600,58 @@ function processOperator( operatorObj ){
     firstOperand = '';
     //save the operation we did (in case we need it on another immediate eval)
     lastOperation = operator;
-    //unset operator so switch will use lastOperation on another immediate eval
-    if(operator != 'evaluate'){
-      operator = operator;
-    }else{
-      operator = '';
-    }
+    operator = '';
     //pass logic to flashDisp()
     dispFlash = true;
     doDebug();
     setTimeout(flashDisp, 10);
   }
 }
+//*************************** switch Operators *********************************
+//handler that finishes display output after setTimeout flashes display window
+//on operator input
+function switchOperator(){
+  switch(swOperator) {
+    case 'divide':
+      displayVal = Number(firstOperand) / Number(lastOperand);
+      break;
+    case 'multiply':
+      displayVal = Number(firstOperand) * Number(lastOperand);
+      break;
+    case 'subtract':
+      displayVal = Number(firstOperand) - Number(lastOperand);
+      break;
+    case 'add':
+      displayVal = Number(firstOperand) + Number(lastOperand);
+      break;
+    case 'calc-xtoy':
+      //firstOperand to the lastOperand power
+      displayVal = Math.pow(Number(firstOperand), Number(lastOperand));
+      break;
+    case 'calc-ytox':
+      //takes the second input and makes it the base, first input the exponent
+      displayVal = Math.pow(Number(lastOperand), Number(firstOperand));
+      break;
+    case 'calc-xroot':
+      //dispVal x power root
+      displayVal = Math.pow( Number(firstOperand), (1 / Number(lastOperand)) );
+      break;
+    case 'calc-logy':
+      //regular logarithm
+      displayVal = getBaseLog(lastOperand, firstOperand);
+      break;
+    case 'calc-enter-exponent':
+      //do EE operation
+      displayVal = doEE(firstOperand, lastOperand);
+      break;
+    case 'rht-paren':
+      //do EE operation
+      displayVal = closeParen();
+      break;
+  }
+  displayVal = String( displayVal );
+}
+
 
 //*************************** flashDisp ****************************************
 //handler that finishes display output after setTimeout flashes display window
@@ -720,6 +751,13 @@ function changeUpBG(){
   }
 }
 
+function addMRBorder(){
+  // memRecall.style.border= '2px solid #8E8E8E';
+  memRecall.style.boxShadow= 'inset 0 0 0 2px #8E8E8E';
+}
+function clearMRBorder(){
+  memRecall.style.boxShadow= '';
+}
 //------------------------------------------------------------------------------
 //                              ADD EVENT LISTENERS
 //------------------------------------------------------------------------------
