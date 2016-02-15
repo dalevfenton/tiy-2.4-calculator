@@ -3530,6 +3530,9 @@ body {
 .second-function {
   display: none; }
 
+#calc-degrees {
+  display: none; }
+
 .btn-equal {
   border-radius: 0 0 3px 0; }
 

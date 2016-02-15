@@ -10,14 +10,39 @@ var trigInput, trigOutput;
 var displayVal = 0;
 var lastOperand = '';
 var test = true;
+var justEvaluated = false;
 var counter = 0;
 var secondOn = false;
 var radianOn = true;
-var butID;
+var inputComplete = false;
+var memVal = 0;
+var parenArray = [];
+var butID, flashTemp;
 //objects used for mapping keyboard input to application logic
 var keyObj = { 13:"evaluate", 27:"calc-clear", 48: "0", 49: "1", 50: "2", 51: "3", 52: "4", 53: "5", 54: "6", 55: "7", 56: "8", 57: "9", 96: "0", 97: "1", 98: "2", 99: "3", 100: "4", 101: "5", 102: "6", 103: "7", 104: "8", 105: "9", 106: "multiply", 107: "add", 109: "subtract", 110: "calc-decimal", 111: "divide", 187: "evaluate", 190: "calc-decimal", 191: "divide", 189: "subtract" };
 var shiftKeyObj = { 57: "lft-paren", 48: "rht-paren", 53: "percent", 56: "multiply", 104: "multiply", 187: "add" };
 
+//***************DEBUG OUTPUT*************************
+//log app state to screen for debugging
+var debugOn = true;
+function doDebug(){
+  if(debugOn){
+    var debugElement = document.querySelector('#debug-window');
+    var debugOutput = '<ul>';
+    debugOutput += '<li>firstOperand: '+ firstOperand + '</li>';
+    debugOutput += '<li>operator: '+ operator + '</li>';
+    debugOutput += '<li>lastOperand: '+ lastOperand + '</li>';
+    debugOutput += '<li>lastOperation: '+ lastOperation + '</li>';
+    debugOutput += '<li>displayVal: '+ displayVal + '</li>';
+    debugOutput += '<li>memVal: '+ memVal + '</li>';
+    debugOutput += '<li>swOperator: '+ swOperator + '</li>';
+    debugOutput += '<li>justEvaluated: '+ justEvaluated + '</li>';
+    debugOutput += '<li>inputComplete: '+ inputComplete + '</li>';
+    debugOutput += '<li>radianOn: '+ radianOn + '</li>';
+    debugOutput += '</ul>';
+    debugElement.innerHTML = debugOutput;
+  }
+}
 
 //***************MATH FUNCTIONS WRITTEN OR COPIED*************************
 //used by several log functions to set different log bases
@@ -29,21 +54,12 @@ function factorial(op) {
  // Lanczos Approximation of the Gamma Function
  // As described in Numerical Recipes in C (2nd ed. Cambridge University Press, 1992)
  // copied from stackoverflow ( http://stackoverflow.com/questions/3959211/fast-factorial-function-in-javascript ) - answer by Waleed Amjad
- var z = op + 1;
- var p = [1.000000000190015, 76.18009172947146, -86.50532032941677, 24.01409824083091, -1.231739572450155, 1.208650973866179E-3, -5.395239384953E-6];
-
- var d1 = Math.sqrt(2 * Math.PI) / z;
- var d2 = p[0];
-
- for (var i = 1; i <= 6; ++i)
-  d2 += p[i] / (z + i);
-
- var d3 = Math.pow((z + 5.5), (z + 0.5));
- var d4 = Math.exp(-(z + 5.5));
-
- d = d1 * d2 * d3 * d4;
-
- return d;
+var factProduct = 1;
+ while(op > 0){
+   factProduct *= op;
+   op --;
+ }
+ return factProduct;
 }
 
 function doEE( opOne, opTwo ){
@@ -116,6 +132,7 @@ function clearCalc( setDisplay ){
   lastOperation = '';
   operator = '';
   swOperator = '';
+  justEvaluated = false;
   displayElement.style.fontSize = '55px';
   document.querySelector('#calc-clear').innerHTML = 'AC';
 }
@@ -177,6 +194,25 @@ function moveDec ( fromIndex ){
   return newStr;
 }
 
+//***********************CLOSE PARENTHESIS FUNCTION*****************************
+//processes operation or lack thereof baesd on condition of the parenArray stack
+//and the current firstOperand and operation setting
+function closeParen(){
+  if(parenArray.length > 0){
+    //we have items on the stack so
+    //check status of firstOperand and operation variables
+    if( (typeof firstOperand == 'number' || typeof firstOperand == 'string') && operator !== '' ) {
+
+    }
+  }else{
+    //stack is not currently set just flash current screen display
+    flashTemp = displayElement.innerHTML;
+    displayElement.innerHTML = '';
+    setTimeout(flashDispPlain, 10);
+  }
+}
+
+
 //***********************SECOND FUNCTION BUTTON IMPLEMENTATION *************************
 //function toggles several buttons to the alternate function they offer
 function secondToggle(){
@@ -221,14 +257,22 @@ function radianDegreeToggle(){
 //Object passed in by click Event Handler is auto filled
 //Object passed by keyup Event Handler is built by sortKey and buildObj functions
 function processInput( inputObj ){
+  if(justEvaluated){
+    lastOperand = '';
+    lastOperation = '';
+    swOperator = '';
+    justEvaluated = false;
+  }
   //set variable to check on
   butID = inputObj.id;
-
-
   //*************NUMBER BUTTON INPUT**************************
   //check if we have hit a number key
   for( j=0; j < inputObj.classList.length; j++ ){
     if( inputObj.classList[j] == 'calc-num'){
+      if (inputComplete){
+        displayVal = '';
+        inputComplete = false;
+      }
       document.querySelector('#calc-clear').innerHTML = 'C';
       if( displayVal == '0'){
         displayVal = inputObj.innerHTML;
@@ -257,21 +301,33 @@ function processInput( inputObj ){
       break;
     case 'lft-paren':
       //handle left parenthesis
+      parenArray.push([firstOperand, operator]);
+      firstOperand = 0;
+      operator = '';
+      inputComplete = true;
       break;
     case 'rht-paren':
       //handle right parenthesis
+      closeParen();
       break;
     case 'mem-clear':
       //handle memory clear
+      memVal = 0;
       break;
     case 'mem-add':
       //add displayVal to memVal
+      memVal += Number(displayVal);
+      inputComplete = true;
       break;
     case 'mem-subtract':
       //subtract displayVal from memVal
+      memVal -= Number(displayVal);
+      inputComplete = true;
       break;
     case 'mem-recall':
-      //displayVal = memVal and update display
+      //displayVal = memVal and update
+      displayVal = memVal;
+      inputComplete = true;
       break;
     case 'second-func':
       //toggle function buttons that have 2nd options feature
@@ -280,10 +336,12 @@ function processInput( inputObj ){
     case 'calc-squared':
       //dispVal squared
       displayVal = Math.pow(displayElement.innerHTML, 2);
+      inputComplete = true;
       break;
     case 'calc-cubed':
       //dispVal cubed
       displayVal = Math.pow(displayElement.innerHTML, 3);
+      inputComplete = true;
       break;
     case 'calc-xtoy':
       //dispVal to the y power
@@ -292,6 +350,7 @@ function processInput( inputObj ){
     case 'calc-etox':
       //e to the x power
       displayVal = Math.pow(Math.E  , displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-ytox':
       //takes the second input and makes it the base, first input the exponent
@@ -300,22 +359,27 @@ function processInput( inputObj ){
     case 'calc-tentox':
       //ten to the x power
       displayVal = Math.pow( 10  , displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-twotox':
       //two to the x power
       displayVal = Math.pow( 2  , displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-inverse':
       //value of 1 divided by dispVal
       displayVal = 1 / displayElement.innerHTML;
+      inputComplete = true;
       break;
     case 'calc-sqrt':
       //disVal square root
       displayVal = Math.sqrt(displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-cube-root':
       //dispVal cube root
       displayVal = Math.cbrt(displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-xroot':
       //dispVal x power root
@@ -324,6 +388,7 @@ function processInput( inputObj ){
     case 'calc-ln':
       //natural log
       displayVal = Math.log(displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-logy':
       //regular logarithm
@@ -332,10 +397,12 @@ function processInput( inputObj ){
     case 'calc-logten':
       //log base 10
       displayVal = getBaseLog( 10, displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-logtwo':
       //log base 2
       displayVal = getBaseLog( 2, displayElement.innerHTML);
+      inputComplete = true;
       break;
     case 'calc-factorial':
       //factorial of input value
@@ -344,86 +411,124 @@ function processInput( inputObj ){
       }else{
         clearCalc('Overflow');
       }
+      inputComplete = true;
       break;
     case 'calc-sin':
-      //sin function
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      trig = Math.sin(degToRad);
-      displayVal = trig / Math.PI /180;
-      displayVal = doTrig(displayElement.innerHTML, 'sin');
+      //sine function
+      trig = inputTrig();
+      trig = Math.sin(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-arcsin':
-      //arcsin in degrees
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      trig = Math.asin(degToRad);
-      displayVal = trig / Math.PI /180;
+      //arcsin
+      trig = inputTrig();
+      trig = Math.asin(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-cos':
-      //cos in degrees
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      trig = Math.cos(degToRad);
-      displayVal = trig / Math.PI /180;
+      //cosine
+      trig = inputTrig();
+      trig = Math.cos(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-arccos':
-      //arccos in degrees
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      trig = Math.acos(degToRad);
-      displayVal = trig / Math.PI /180;
+      //arccos
+      trig = inputTrig();
+      trig = Math.acos(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-tan':
-      //tan in degrees
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      trig = Math.tan(degToRad);
-      displayVal = trig / Math.PI /180;
+      //tangent
+      trig = inputTrig();
+      trig = Math.tan(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-arctan':
-      //arctan in degrees
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      trig = Math.atan(degToRad);
-      displayVal = trig / Math.PI /180;
+      //arctan
+      trig = inputTrig();
+      trig = Math.atan(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'const-e':
       //Euler's number
       displayVal = Math.E;
+      inputComplete = true;
       break;
     case 'calc-enter-exponent':
       //do EE operation
       processOperator(inputObj);
       break;
     case 'calc-radian':
-      //value of 1 divided by dispVal
-      degToRad = displayElement.innerHTML * Math.PI / 180;
-      displayVal = degToRad;
+      //toggle radian and degree input / output for trig functions
+      radianDegreeToggle();
+      break;
+    case 'calc-degrees':
+      //toggle radian and degree input / output for trig functions
+      radianDegreeToggle();
       break;
     case 'calc-sinh':
-      //disVal square root
+      //hyperbolic sine
+      trig = inputTrig();
+      trig = Math.sinh(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-arcsinh':
-      //dispVal cube root
+      //hyperbolic arcsin
+      trig = inputTrig();
+      trig = Math.asinh(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-cosh':
-      //dispVal x power root
+      //hyperbolic cosine
+      trig = inputTrig();
+      trig = Math.cosh(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-arccosh':
-      //natural log
+      //hyperbolic arccos
+      trig = inputTrig();
+      trig = Math.acosh(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-tanh':
-      //regular logarithm
+      //hyperbolic tan
+      trig = inputTrig();
+      trig = Math.tanh(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'calc-arctanh':
-      //log base 10
+      //hyperbolic arctan
+      trig = inputTrig();
+      trig = Math.atanh(trig);
+      displayVal = outputTrig( trig );
+      inputComplete = true;
       break;
     case 'const-pi':
       //pi
       displayVal = Math.PI;
+      inputComplete = true;
       break;
     case 'calc-random':
-      //log base 2
+      //random number between 0 and 1
+      displayVal = Math.random();
+      inputComplete = true;
       break;
     default:
   }
-
+  // justEvaluated = false;
   outputToDisplay ( displayVal );
+  doDebug();
 }
 
 
@@ -443,12 +548,12 @@ function processOperator( operatorObj ){
     firstOperand = displayVal;
     dispFlash = false;
     lastOperand = '';
+    doDebug();
     setTimeout(flashDisp, 10);
   } else {
     //execute the operation
     //check that our firstOperand is set and a valid type to operate on
     if( typeof firstOperand == 'number' || typeof firstOperand == 'string') {
-
       //set lastOperand to use if we get evaluated again after this, but only if
       // it is currently not set (otherwise we might be on the 2nd run already!)
       if(lastOperand === ''){
@@ -457,12 +562,12 @@ function processOperator( operatorObj ){
       //set our variable to use in the switch statement, if operator is set, we
       //use that, if operator is not set (we just performed an operation and
       // are doing another evaluation immediately), then we switch on the lastOperation
-      if(operator !== ''){
+      if(operator !== '' ){
         swOperator = operator;
       }else if (lastOperation !== '') {
         swOperator = lastOperation;
       }
-      //debugging code
+      // debugging code
       // console.log('firstOperand is: ', firstOperand);
       // console.log('operator is: ', operator);
       // console.log('displayVal is: ', displayVal);
@@ -509,9 +614,15 @@ function processOperator( operatorObj ){
       //save the operation we did (in case we need it on another immediate eval)
       lastOperation = operator;
       //unset operator so switch will use lastOperation on another immediate eval
-      operator = '';
+      if(operator != 'evaluate'){
+        operator = operator;
+      }else{
+        operator = '';
+      }
       //pass logic to flashDisp()
       dispFlash = true;
+      justEvaluated = true;
+      doDebug();
       setTimeout(flashDisp, 10);
     }
   }
@@ -529,6 +640,13 @@ function flashDisp () {
     outputToDisplay ( displayVal );
     displayVal = '0';
   }
+  inputComplete = true;
+}
+
+//*************************** flashDispPlain ***********************************
+//handler that flashes the display with no changes to the state of the apply
+function flashDispPlain(){
+    displayElement.innerHTML = flashTemp;
 }
 
 //********************MOUSE INPUT PASS THROUGH FUNCTIONS ***********************
