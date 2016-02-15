@@ -10,7 +10,6 @@ var trigInput, trigOutput;
 var displayVal = 0;
 var lastOperand = '';
 var test = true;
-var justEvaluated = false;
 var counter = 0;
 var secondOn = false;
 var radianOn = true;
@@ -36,7 +35,6 @@ function doDebug(){
     debugOutput += '<li>displayVal: '+ displayVal + '</li>';
     debugOutput += '<li>memVal: '+ memVal + '</li>';
     debugOutput += '<li>swOperator: '+ swOperator + '</li>';
-    debugOutput += '<li>justEvaluated: '+ justEvaluated + '</li>';
     debugOutput += '<li>inputComplete: '+ inputComplete + '</li>';
     debugOutput += '<li>radianOn: '+ radianOn + '</li>';
     debugOutput += '</ul>';
@@ -68,13 +66,14 @@ function doEE( opOne, opTwo ){
   if( opOne.indexOf('.') > -1 ){
     //if we already have a decimal in the number
     var decIn = opOne.indexOf('.');
-    numDigits = opOne.length - decIn -1 ;
+    numDigits = opOne.length - decIn;
     output = opOne.slice(0, 1) + '.' + opOne.slice(1,decIn) + opOne.slice( decIn+1, opOne.length-1) + E + (numDigits + opTwo);
   }else{
     //no decimal present
-    numDigits = opOne.length-1;
-    output = opOne.slice(0,1) + '.' + opOne.slice(1, numDigits ) + 'E' + (numDigits + opTwo);
+    numDigits = opOne.length;
+    output = opOne.slice(0,1) + '.' + opOne.slice(1, numDigits ) + ' E ' + (numDigits + opTwo);
   }
+  return output;
 }
 
 function inputTrig(){
@@ -132,7 +131,6 @@ function clearCalc( setDisplay ){
   lastOperation = '';
   operator = '';
   swOperator = '';
-  justEvaluated = false;
   displayElement.style.fontSize = '55px';
   document.querySelector('#calc-clear').innerHTML = 'AC';
 }
@@ -257,12 +255,6 @@ function radianDegreeToggle(){
 //Object passed in by click Event Handler is auto filled
 //Object passed by keyup Event Handler is built by sortKey and buildObj functions
 function processInput( inputObj ){
-  if(justEvaluated){
-    lastOperand = '';
-    lastOperation = '';
-    swOperator = '';
-    justEvaluated = false;
-  }
   //set variable to check on
   butID = inputObj.id;
   //*************NUMBER BUTTON INPUT**************************
@@ -270,6 +262,7 @@ function processInput( inputObj ){
   for( j=0; j < inputObj.classList.length; j++ ){
     if( inputObj.classList[j] == 'calc-num'){
       if (inputComplete){
+        lastOperand = displayElement.innerHTML;
         displayVal = '';
         inputComplete = false;
       }
@@ -526,7 +519,6 @@ function processInput( inputObj ){
       break;
     default:
   }
-  // justEvaluated = false;
   outputToDisplay ( displayVal );
   doDebug();
 }
@@ -540,9 +532,10 @@ function processOperator( operatorObj ){
   // on operator input we flash the displayVal for 10 miliseconds to give a
   // visual reference to the user (per Apple Calc functionality)
   // -- see setTimeout at end of each part here
+  inputComplete = true;
   outputToDisplay( '' );
   //check if we need to evaluate the current expression or set operation
-  if( operatorObj.id != 'evaluate' ){
+  if( operatorObj.id != 'evaluate' && firstOperand === '' ){
     //save the operation to do and save the first operand value
     operator = operatorObj.id;
     firstOperand = displayVal;
@@ -552,79 +545,80 @@ function processOperator( operatorObj ){
     setTimeout(flashDisp, 10);
   } else {
     //execute the operation
-    //check that our firstOperand is set and a valid type to operate on
-    if( typeof firstOperand == 'number' || typeof firstOperand == 'string') {
-      //set lastOperand to use if we get evaluated again after this, but only if
-      // it is currently not set (otherwise we might be on the 2nd run already!)
-      if(lastOperand === ''){
-        lastOperand = displayVal;
-      }
-      //set our variable to use in the switch statement, if operator is set, we
-      //use that, if operator is not set (we just performed an operation and
-      // are doing another evaluation immediately), then we switch on the lastOperation
-      if(operator !== '' ){
-        swOperator = operator;
-      }else if (lastOperation !== '') {
-        swOperator = lastOperation;
-      }
-      // debugging code
-      // console.log('firstOperand is: ', firstOperand);
-      // console.log('operator is: ', operator);
-      // console.log('displayVal is: ', displayVal);
-      // console.log('swOperator is: ', swOperator);
-      // console.log('lastOperand is: ', lastOperand);
-      switch(swOperator) {
-        case 'divide':
-          displayVal = Number(firstOperand) / Number(lastOperand);
-          break;
-        case 'multiply':
-          displayVal = Number(firstOperand) * Number(lastOperand);
-          break;
-        case 'subtract':
-          displayVal = Number(firstOperand) - Number(lastOperand);
-          break;
-        case 'add':
-          displayVal = Number(firstOperand) + Number(lastOperand);
-          break;
-        case 'calc-xtoy':
-          //firstOperand to the lastOperand power
-          displayVal = Math.pow(Number(firstOperand), Number(lastOperand));
-          break;
-        case 'calc-ytox':
-          //takes the second input and makes it the base, first input the exponent
-          displayVal = Math.pow(Number(lastOperand), Number(firstOperand));
-          break;
-        case 'calc-xroot':
-          //dispVal x power root
-          displayVal = Math.pow( Number(firstOperand), (1 / Number(lastOperand)) );
-          break;
-        case 'calc-logy':
-          //regular logarithm
-          displayVal = getBaseLog(lastOperand, firstOperand);
-          break;
-        case 'calc-enter-exponent':
-          //do EE operation
-          displayVal = doEE(firstOperand, lastOperand);
-          break;
-      }
-      // console.log('result of the operation is: ', displayVal);
-      // reset variables for use in next operation(s)
-      //new operand is result of this operation
+
+    //set lastOperand to use if we get evaluated again after this, but only if
+    // it is currently not set (otherwise we might be on the 2nd run already!)
+    if(firstOperand === ''){
       firstOperand = displayVal;
-      //save the operation we did (in case we need it on another immediate eval)
-      lastOperation = operator;
-      //unset operator so switch will use lastOperation on another immediate eval
-      if(operator != 'evaluate'){
-        operator = operator;
-      }else{
-        operator = '';
-      }
-      //pass logic to flashDisp()
-      dispFlash = true;
-      justEvaluated = true;
-      doDebug();
-      setTimeout(flashDisp, 10);
     }
+    if(lastOperand === ''){
+      lastOperand = displayVal;
+    }
+    //set our variable to use in the switch statement, if operator is set, we
+    //use that, if operator is not set (we just performed an operation and
+    // are doing another evaluation immediately), then we switch on the lastOperation
+    if(operator !== '' ){
+      swOperator = operator;
+    }else if (lastOperation !== '') {
+      swOperator = lastOperation;
+    }
+    // debugging code
+    // console.log('firstOperand is: ', firstOperand);
+    // console.log('operator is: ', operator);
+    // console.log('displayVal is: ', displayVal);
+    // console.log('swOperator is: ', swOperator);
+    // console.log('lastOperand is: ', lastOperand);
+    switch(swOperator) {
+      case 'divide':
+        displayVal = Number(firstOperand) / Number(lastOperand);
+        break;
+      case 'multiply':
+        displayVal = Number(firstOperand) * Number(lastOperand);
+        break;
+      case 'subtract':
+        displayVal = Number(firstOperand) - Number(lastOperand);
+        break;
+      case 'add':
+        displayVal = Number(firstOperand) + Number(lastOperand);
+        break;
+      case 'calc-xtoy':
+        //firstOperand to the lastOperand power
+        displayVal = Math.pow(Number(firstOperand), Number(lastOperand));
+        break;
+      case 'calc-ytox':
+        //takes the second input and makes it the base, first input the exponent
+        displayVal = Math.pow(Number(lastOperand), Number(firstOperand));
+        break;
+      case 'calc-xroot':
+        //dispVal x power root
+        displayVal = Math.pow( Number(firstOperand), (1 / Number(lastOperand)) );
+        break;
+      case 'calc-logy':
+        //regular logarithm
+        displayVal = getBaseLog(lastOperand, firstOperand);
+        break;
+      case 'calc-enter-exponent':
+        //do EE operation
+        displayVal = doEE(firstOperand, lastOperand);
+        break;
+    }
+    // console.log('result of the operation is: ', displayVal);
+    // reset variables for use in next operation(s)
+    //new operand is result of this operation
+    // firstOperand = displayVal;
+    firstOperand = '';
+    //save the operation we did (in case we need it on another immediate eval)
+    lastOperation = operator;
+    //unset operator so switch will use lastOperation on another immediate eval
+    if(operator != 'evaluate'){
+      operator = operator;
+    }else{
+      operator = '';
+    }
+    //pass logic to flashDisp()
+    dispFlash = true;
+    doDebug();
+    setTimeout(flashDisp, 10);
   }
 }
 
@@ -640,7 +634,6 @@ function flashDisp () {
     outputToDisplay ( displayVal );
     displayVal = '0';
   }
-  inputComplete = true;
 }
 
 //*************************** flashDispPlain ***********************************
